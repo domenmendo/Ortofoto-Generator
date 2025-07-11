@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="sl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ortofoto Generator</title>
+  </head>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js"></script>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🗺️ Ortofoto Generator</h1>
+        <p>Generiranje ortofota iz prekrivajočih se aerofotografij</p>
+      </div>
+
+      <div class="step-nav">
+        <button class="step-btn active" onclick="showStep(1)">
+          1. Vezne točke
+        </button>
+        <button class="step-btn" onclick="showStep(2)">
+          2. Združitev slik
+        </button>
+        <button class="step-btn" onclick="showStep(3)">
+          3. Oslonilne točke
+        </button>
+        <button class="step-btn" onclick="showStep(4)">
+          4. Georeferenciranje
+        </button>
+      </div>
+
+      <!-- Step 1: Vezne točke -->
+      <div id="step1" class="step-content active">
+        <div class="instruction">
+          Naložite dve sliki in označite vsaj 2 vezni točki na vsakih slikah, ki
+          predstavljajo iste objekte.
+        </div>
+
+        <div class="images-container">
+          <div class="image-section">
+            <h3>Slika 1</h3>
+            <input
+              type="file"
+              class="file-input"
+              id="image1Input"
+              accept="image/*"
+              onchange="loadImage(1)"
+            />
+            <canvas
+              id="canvas1"
+              class="image-canvas"
+              onclick="addTiePoint(1, event)"
+            ></canvas>
+            <div class="points-list" id="points1"></div>
+          </div>
+
+          <div class="image-section">
+            <h3>Slika 2</h3>
+            <input
+              type="file"
+              class="file-input"
+              id="image2Input"
+              accept="image/*"
+              onchange="loadImage(2)"
+            />
+            <canvas
+              id="canvas2"
+              class="image-canvas"
+              onclick="addTiePoint(2, event)"
+            ></canvas>
+            <div class="points-list" id="points2"></div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <button class="action-btn" onclick="clearTiePoints()">
+            Počisti točke
+          </button>
+          <button
+            class="action-btn"
+            id="proceedStep2"
+            onclick="showStep(2)"
+            disabled
+          >
+            Nadaljuj → Korak 2
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Združitev slik -->
+      <div id="step2" class="step-content">
+        <div class="instruction">
+          Avtomatska združitev slik na osnovi veznih točk.
+        </div>
+
+        <div class="control-panel">
+          <button class="action-btn" id="mergeBtn" onclick="mergeImages()">
+            Združi sliki
+          </button>
+          <button
+            class="action-btn"
+            id="proceedStep3"
+            onclick="showStep(3)"
+            disabled
+          >
+            Nadaljuj → Korak 3
+          </button>
+        </div>
+
+        <div class="merged-image-container">
+          <canvas id="mergedCanvas" class="merged-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Step 3: Oslonilne točke -->
+      <div id="step3" class="step-content">
+
+        <div class="merged-image-container">
+          <canvas
+            id="mergedCanvas3"
+            class="merged-canvas"
+            onclick="addControlPoint(event)"
+          ></canvas>
+        </div>
+
+        <div class="control-panel">
+          <div id="controlPointForm" style="display: none">
+            <h4>Vnos koordinat za oslonilno točko:</h4>
+            <div class="coordinate-input">
+              <input
+                type="number"
+                class="coord-field"
+                id="coordX"
+                placeholder="X koordinata (m)"
+                step="0.001"
+              />
+              <input
+                type="number"
+                class="coord-field"
+                id="coordY"
+                placeholder="Y koordinata (m)"
+                step="0.001"
+              />
+            </div>
+            <button class="action-btn" onclick="saveControlPoint()">
+              Shrani točko
+            </button>
+            <button
+              class="action-btn"
+              onclick="cancelControlPoint()"
+              style="background: #e74c3c"
+            >
+              Prekliči
+            </button>
+          </div>
+
+          <div class="points-list" id="controlPoints"></div>
+          <button class="action-btn" onclick="clearControlPoints()">
+            Počisti oslonilne točke
+          </button>
+          <button
+            class="action-btn"
+            id="proceedStep4"
+            onclick="showStep(4)"
+            disabled
+          >
+            Nadaljuj → Korak 4
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Georeferenciranje -->
+      <div id="step4" class="step-content">
+
+        <div class="control-panel">
+          <button class="action-btn" onclick="resetApplication()">
+            Ponovi postopek
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mouse-coords" id="mouseCoords">
+      <div>Koordinate: <span id="coordDisplay">0, 0</span></div>
+    </div>
+  </body>
+</html>
